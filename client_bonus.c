@@ -6,7 +6,7 @@
 /*   By: btuncer <btuncer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 19:56:20 by btuncer           #+#    #+#             */
-/*   Updated: 2025/04/15 18:23:53 by btuncer          ###   ########.fr       */
+/*   Updated: 2025/04/15 19:08:15 by btuncer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ void	messenger(int signal)
 		while (i--)
 		{
 			g_gate = 0;
-			kill(signal, SIGUSR2);
+			if (kill(signal, SIGUSR2) == -1)
+				exit(1);
 			while (!g_gate)
 				pause();
 		}

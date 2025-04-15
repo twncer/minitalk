@@ -12,12 +12,20 @@ SOURCES_BONUS = \
 OBJ = $(SOURCES:.c=.o)
 OBJ_BONUS = $(SOURCES_BONUS:.c=.o)
 
-all: $(OBJ)
+all: client server
+
+client: $(OBJ)
 	$(CC) $(CFLAGS) client.o -o client
+
+server: $(OBJ)
 	$(CC) $(CFLAGS) server.o -o server
 
-bonus: $(OBJ_BONUS)
+bonus: client_bonus server_bonus
+
+client_bonus: $(OBJ_BONUS)
 	$(CC) $(CFLAGS) client_bonus.o -o client_bonus
+	
+server_bonus: $(OBJ_BONUS)
 	$(CC) $(CFLAGS) server_bonus.o -o server_bonus
 
 clean:
