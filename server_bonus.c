@@ -6,7 +6,7 @@
 /*   By: btuncer <btuncer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 19:56:27 by btuncer           #+#    #+#             */
-/*   Updated: 2025/04/15 01:41:10 by btuncer          ###   ########.fr       */
+/*   Updated: 2025/04/15 18:23:40 by btuncer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,24 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-void stack(int signal, siginfo_t *sig_info, void *context)
+void	stack(int signal, siginfo_t *sig_info, void *context)
 {
-    static char temp = 0;
-    static unsigned short counter = 0;
+	static char				temp = 0;
+	static unsigned short	counter = 0;
 
-    if (signal == SIGUSR1)
-        temp = temp | (1 << counter);
+	(void)context;
+	if (signal == SIGUSR1)
+		temp = temp | (1 << counter);
 	counter++;
-    if (counter == 8)
-    {
-        write(1, &temp, 1);
+	if (counter == 8)
+	{
+		write(1, &temp, 1);
 		if (temp == '\0')
 			kill(sig_info->si_pid, SIGUSR2);
 		temp = 0;
-        counter = 0;
-    }
-    kill(sig_info->si_pid, SIGUSR1);
+		counter = 0;
+	}
+	kill(sig_info->si_pid, SIGUSR1);
 }
 
 void	put_nbr(int nbr)
@@ -58,8 +59,8 @@ int	main(void)
 	sigact.sa_sigaction = stack;
 	sigact.sa_flags = SA_SIGINFO;
 	sigemptyset(&sigact.sa_mask);
-	if (sigaction(SIGUSR1, &sigact, 0) == -1
-		|| sigaction(SIGUSR2, &sigact, 0) == -1)
+	if (sigaction(SIGUSR1, &sigact, 0) == -1 || sigaction(SIGUSR2, &sigact,
+			0) == -1)
 		exit(1);
 	write(1, "PID: ", 5);
 	put_nbr(pid);

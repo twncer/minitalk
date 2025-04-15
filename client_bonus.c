@@ -6,7 +6,7 @@
 /*   By: btuncer <btuncer@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 19:56:20 by btuncer           #+#    #+#             */
-/*   Updated: 2025/04/15 01:41:09 by btuncer          ###   ########.fr       */
+/*   Updated: 2025/04/15 18:23:53 by btuncer          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,29 @@ short	g_gate = 0;
 
 void	messenger(int signal)
 {
+	int		i;
+
 	if (signal == SIGUSR1)
 		g_gate = 1;
 	else if (signal == SIGUSR2)
 		write(1, "OK\n", 3);
+	else
+	{
+		i = 8;
+		while (i--)
+		{
+			g_gate = 0;
+			kill(signal, SIGUSR2);
+			while (!g_gate)
+				pause();
+		}
+	}
 }
 
 void	send_str(char *str, int receiver_pid)
 {
 	int	counter;
 	int	checker;
-
-	int	i = 0;
 
 	while (*str)
 	{
@@ -50,7 +61,6 @@ void	send_str(char *str, int receiver_pid)
 		}
 		str++;
 	}
-
 }
 
 bool	in(char *str, char c)
@@ -111,18 +121,10 @@ int	main(int argc, char **argv)
 	sigact.sa_handler = messenger;
 	sigact.sa_flags = 0;
 	sigemptyset(&sigact.sa_mask);
-	if (sigaction(SIGUSR1, &sigact, 0) == -1
-		|| sigaction(SIGUSR2, &sigact, 0) == -1)
+	if (sigaction(SIGUSR1, &sigact, 0) == -1 || sigaction(SIGUSR2, &sigact,
+			0) == -1)
 		exit(1);
 	string_to_send = argv[2];
 	send_str(string_to_send, receiver_pid);
-	int i = 8;
-	while (i--)
-	{
-		g_gate = 0;
-		kill(receiver_pid, SIGUSR2);
-		while (!g_gate)
-			pause();
-	}
-
+	messenger(receiver_pid);
 }
